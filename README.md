@@ -25,7 +25,7 @@ This repository is the official PyTorch implementation of "CiaoSR: Continuous Im
 <p align="center">
   <a href="https://github.com/caojiezhang/CiaoSR/releases">
     <img width=100% src="assets/img052.gif"/>
-    <img width=100% src="assets/img053.gif"/>
+    <!-- <img width=100% src="assets/img053.gif"/> -->
   </a>
 </p>
 
