@@ -179,6 +179,5 @@ mmedited/datasets/__pycache__/
 mmedited/models/backbones/sr_backbones/__pycache__/
 mmedited/models/restorers/__pycache__/
 
-*.png
 *.err
 *.out
