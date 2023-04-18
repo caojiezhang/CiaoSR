@@ -52,54 +52,40 @@ This repository is the official PyTorch implementation of "CiaoSR: Continuous Im
 - [ ] Add real-world arbitrary-scale SR
 
 ## Requirements
-> - Python 3.8, PyTorch >= 1.9.1
-> - mmedit 0.11.0
-> - Requirements: see requirements.txt
 > - Platforms: Ubuntu 18.04, cuda-11.1
+> - Python 3.8, PyTorch >= 1.9.1
+> - [mmedit](https://github.com/open-mmlab/mmediting) 0.11.0
+
 
 ## Quick Testing
-Following commands will download [pretrained models](https://github.com/caojiezhang/CiaoSR/releases) and [test datasets](https://github.com/caojiezhang/CiaoSR/releases). If out-of-memory, try to reduce `size_patch_testing` at the expense of slightly decreased performance.
+Following commands will download [pretrained models](https://github.com/caojiezhang/CiaoSR/releases) and [test datasets](https://github.com/caojiezhang/CiaoSR/releases). If out-of-memory, try to reduce `tile` at the expense of slightly decreased performance.
 
 ```bash
 # download code
 git clone https://github.com/caojiezhang/CiaoSR
 cd CiaoSR
-pip install -r requirements.txt
 
-PYTHONPATH=/bin/..:tools/..: python tools/test.py configs/restorers/uvsrnet/002_pretrain_uvsr3DBDnet_REDS_25frames_3iter_sf544_slomo_modify_newdataset.py edsr-ciaosr.pth
+
+PYTHONPATH=/bin/..:tools/..: python tools/test.py configs/ciaosr/001_localimplicitsr_rdn_div2k_g1_c64b16_1000k_unfold_lec_mulwkv_res_nonlocal.py rdn-ciaosr.pth
 
 ```
 
 **All visual results of CiaoSR can be downloaded [here](https://github.com/caojiezhang/CiaoSR/releases)**.
 
 
-## Dataset
-The training and testing sets are as follows (see the [supplementary](https://github.com/caojiezhang/DAVSR/releases) for a detailed introduction of all datasets). For better I/O speed, use [create_lmdb.py](https://github.com/cszn/KAIR/tree/master/scripts/data_preparation/create_lmdb.py) to convert `.png` datasets to `.lmdb` datasets.
-
-Note: You do **NOT need** to prepare the datasets if you just want to test the model. `main_test_vrt.py` will download the testing set automaticaly.
-
-
-| Task                                                          |                                                                                                                                                                                                                                    Training Set                                                                                                                                                                                                                                     |                                                                                                                                                                                                                                                                                 Testing Set                                                                                                                                                                                                                                                                                  |        Pretrained Model and Visual Results of DAVSR  |
-|:--------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|    :---:      |
-| Real video denoising                                      |                                                                                 [REDS sharp](https://seungjunnah.github.io/Datasets/reds.html) (266 videos, 266000 frames: train + val except REDS4)   <br  /><br  /> *Use  [regroup_reds_dataset.py](https://github.com/cszn/KAIR/tree/master/scripts/data_preparation/regroup_reds_dataset.py) to regroup and rename REDS val set                                                                                 |                                                                                                                                                                                                                                                           REDS4 (4 videos, 2000 frames: 000, 011, 015, 020 of REDS)                                                                                                                                                                                                                                                           | [here](https://github.com/caojiezhang/RVDNet/releases) |
-
 ## Training
 
 ```bash
 
-PYTHONPATH=/bin/..:tools/..: ./tools/dist_train.sh configs/restorers/uvsrnet/002_pretrain_uvsr3DBDnet_REDS_25frames_3iter_sf544_slomo_modify_newdataset.py 8
+PYTHONPATH=/bin/..:tools/..: ./tools/dist_train.sh configs/ciaosr/001_localimplicitsr_rdn_div2k_g1_c64b16_1000k_unfold_lec_mulwkv_res_nonlocal.py 8
 
 ```
 
 ## Results
-We achieved state-of-the-art performance on practical space-time video super-resolution. Detailed results can be found in the [paper](https://arxiv.org/abs/2207.10765).
+We achieved state-of-the-art performance on arbitrary-scale iamge super-resolution. Detailed results can be found in the [paper](https://arxiv.org/abs/2212.04362).
 
 <p align="center">
-  <img width="1000" src="assets/table1.png">
-</p>
-
-<p align="center">
-  <img width="1000" src="assets/figure1.png">
+  <img width="1000" src="assets/fig1.png">
 </p>
 
 
@@ -114,4 +100,4 @@ We achieved state-of-the-art performance on practical space-time video super-res
   ```
 
 ## License and Acknowledgement
-This project is released under the CC-BY-NC license. We refer to codes from [KAIR](https://github.com/cszn/KAIR), [BasicSR](https://github.com/xinntao/BasicSR), and [mmediting](https://github.com/open-mmlab/mmediting). Thanks for their awesome works. The majority of CiaoSR is licensed under CC-BY-NC, however portions of the project are available under separate license terms: KAIR is licensed under the MIT License, BasicSR, Video Swin Transformer and mmediting are licensed under the Apache 2.0 license.
+This project is released under the CC-BY-NC license. We refer to codes from [KAIR](https://github.com/cszn/KAIR), [BasicSR](https://github.com/xinntao/BasicSR), and [mmediting](https://github.com/open-mmlab/mmediting). Thanks for their awesome works. The majority of CiaoSR is licensed under CC-BY-NC, however portions of the project are available under separate license terms: KAIR is licensed under the MIT License, BasicSR, and mmediting are licensed under the Apache 2.0 license.
