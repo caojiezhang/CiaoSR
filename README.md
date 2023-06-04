@@ -54,8 +54,16 @@ This repository is the official PyTorch implementation of "CiaoSR: Continuous Im
 ## Requirements
 > - Platforms: Ubuntu 18.04, cuda-11.1
 > - Python 3.8, PyTorch >= 1.9.1
-> - [mmedit](https://github.com/open-mmlab/mmediting) 0.11.0
+> - [mmedit](https://openi.pcl.ac.cn/open-mmlab/mmediting.git) 0.11.0
 
+```bash
+# install mmcv
+pip install --no-cache-dir --ignore-installed mmcv-full -f https://download.openmmlab.com/mmcv/dist/cu110/torch1.9.1/index.html 
+
+# download mmediting from https://openi.pcl.ac.cn/open-mmlab/mmediting.git
+cd mmediting
+python setup.py develop
+```
 
 ## Quick Testing
 Following commands will download [pretrained models](https://github.com/caojiezhang/CiaoSR/releases) and [test datasets](https://github.com/caojiezhang/CiaoSR/releases). If out-of-memory, try to reduce `tile` at the expense of slightly decreased performance.
@@ -66,7 +74,7 @@ git clone https://github.com/caojiezhang/CiaoSR
 cd CiaoSR
 
 
-PYTHONPATH=/bin/..:tools/..: python tools/test.py configs/ciaosr/001_localimplicitsr_rdn_div2k_g1_c64b16_1000k_unfold_lec_mulwkv_res_nonlocal.py rdn-ciaosr.pth
+PYTHONPATH=/bin/..:tools/..: python tools/test.py configs/001_localimplicitsr_rdn_div2k_g1_c64b16_1000k_unfold_lec_mulwkv_res_nonlocal.py pretrain_model/rdn-ciaosr.pth
 
 ```
 
@@ -77,7 +85,7 @@ PYTHONPATH=/bin/..:tools/..: python tools/test.py configs/ciaosr/001_localimplic
 
 ```bash
 
-PYTHONPATH=/bin/..:tools/..: ./tools/dist_train.sh configs/ciaosr/001_localimplicitsr_rdn_div2k_g1_c64b16_1000k_unfold_lec_mulwkv_res_nonlocal.py 8
+PYTHONPATH=/bin/..:tools/..: ./tools/dist_train.sh configs/001_localimplicitsr_rdn_div2k_g1_c64b16_1000k_unfold_lec_mulwkv_res_nonlocal.py 8
 
 ```
 

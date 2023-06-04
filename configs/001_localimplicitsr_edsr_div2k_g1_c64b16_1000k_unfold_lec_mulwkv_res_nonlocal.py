@@ -1,26 +1,23 @@
-exp_name = '001_localimplicitsr_rdn_div2k_g1_c64b16_1000k_unfold_lec_mulwkv_res_nonlocal'
+exp_name = '001_ciaosr_edsr_div2k'
 scale_min, scale_max = 1, 4
 val_scale = 4
+data_type = 'Urban100'  #TODO {Set5, Set14, BSDS100, Urban100, Manga109}
 
 from mmedited.models.restorers.ciaosr import CiaoSR
-from mmedited.models.backbones.sr_backbones.ciaosr_net import LocalImplicitSRRDN
-from mmedited.datasets.pipelines.generate_assistant import GenerateCoordinateAndCell2
+from mmedited.models.backbones.sr_backbones.ciaosr_net import LocalImplicitSREDSR
 
 
 # model settings
 model = dict(
     type=CiaoSR,
     generator=dict(
-        type=LocalImplicitSRRDN,
+        type=LocalImplicitSREDSR,
         encoder=dict(
-            type='RDN',
+            type='EDSR',
             in_channels=3,
             out_channels=3,
             mid_channels=64,
-            num_blocks=16,
-            upscale_factor=4,
-            num_layers=8,
-            channel_growth=64),
+            num_blocks=16),
         imnet_q=dict(
             type='MLPRefiner',
             in_dim=4,
@@ -38,20 +35,17 @@ model = dict(
             hidden_list=[256, 256, 256, 256]),
         feat_unfold=True,
         eval_bsize=30000,
-        local_ensemble_coord=True,   #lec
-        imnet_k_type='mul_w',
-        imnet_v_type='mul_w',
-        res=True,
-        non_local_attn=True,
-        cat_nla_v=True,
         ),
     rgb_mean=(0.4488, 0.4371, 0.4040),
     rgb_std=(1., 1., 1.),
     pixel_loss=dict(type='L1Loss', loss_weight=1.0, reduction='mean'))
 # model training and testing settings
 train_cfg = None
-# test_cfg = dict(metrics=['PSNR', 'SSIM'], crop_border=val_scale, scale=val_scale) # x6, x8, x12 , convert_to='y'
-test_cfg = dict(metrics=['PSNR', 'SSIM'], crop_border=val_scale, scale=val_scale, tile=192, tile_overlap=32) # , convert_to='y'
+if val_scale <= 4:
+    test_cfg = dict(metrics=['PSNR', 'SSIM'], crop_border=val_scale, scale=val_scale, tile=192, tile_overlap=32, convert_to='y') # larger tile is better
+else:
+    test_cfg = dict(metrics=['PSNR', 'SSIM'], crop_border=val_scale, scale=val_scale, convert_to='y') # x6, x8, x12 
+
 
 # dataset settings
 train_dataset_type = 'SRFolderGTDataset'
@@ -83,7 +77,6 @@ train_pipeline = [
         meta_keys=['gt_path'])
 ]
 
-
 valid_pipeline = [
     dict(
         type='LoadImageFromFile',
@@ -91,16 +84,15 @@ valid_pipeline = [
         key='gt',
         flag='color',
         channel_order='rgb'),
-    dict(type='RandomDownSampling', scale_min=val_scale, scale_max=val_scale),  
+    dict(type='RandomDownSampling', scale_min=val_scale, scale_max=val_scale),
     dict(type='RescaleToZeroOne', keys=['lq', 'gt']),
     dict(type='ImageToTensor', keys=['lq', 'gt']),
-    dict(type='GenerateCoordinateAndCell', scale=val_scale),  
+    dict(type='GenerateCoordinateAndCell'),
     dict(
         type='Collect',
         keys=['lq', 'gt', 'coord', 'cell'],
         meta_keys=['gt_path'])
 ]
-
 test_pipeline = [
     dict(
         type='LoadImageFromFile',
@@ -123,25 +115,10 @@ test_pipeline = [
         meta_keys=['gt_path'])
 ]
 
-continuous_pipeline = [
-    dict(
-        type='LoadImageFromFile',
-        io_backend='disk',
-        key='lq',
-        flag='color',
-        channel_order='rgb'),
-    dict(type='RescaleToZeroOne', keys=['lq']),
-    dict(type='ImageToTensor', keys=['lq']),
-    dict(type='GenerateCoordinateAndCell', scale=val_scale),
-    dict(
-        type='Collect',
-        keys=['lq', 'coord', 'cell'],
-        meta_keys=['lq_path'])
-]
-
-
 data_dir = "data"
-mydata_dir = "mydata"
+lq_path = f'{data_dir}/Classical/' + data_type + '/LRbicx'+str(val_scale)
+gt_path = f'{data_dir}/Classical/' + data_type + '/GTmod12'
+
 data = dict(
     workers_per_gpu=8,
     train_dataloader=dict(samples_per_gpu=16, drop_last=True),
@@ -155,36 +132,21 @@ data = dict(
             gt_folder=f'{data_dir}/DIV2K/HR',  #f'{data_dir}/DIV2K/DIV2K_train_HR', #
             pipeline=train_pipeline,
             scale=scale_max)),
-    val=dict(
-        type=val_dataset_type,
-        gt_folder=f'{mydata_dir}/Classical/Urban100/GTmod12',  #f'{data_dir}/testset/Urban100/HR',  #f'{data_dir}/sr_test/Urban100', #
-        pipeline=valid_pipeline,
-        scale=scale_max),
+    val=dict(type=val_dataset_type,
+             gt_folder=gt_path, 
+             pipeline=valid_pipeline,
+             scale=scale_max),
     test=dict(
-        # type=test_dataset_type,
-        # lq_folder=f'{mydata_dir}/Classical/Manga109/LRbicx4',  #f'{mydata_dir}/Classical/Urban100/LRbicx4',  #f'{mydata_dir}/Classical/BSDS100/LRbicx4',  #f'{mydata_dir}/Classical/Set5/LRbicx3', #f'{data_dir}/testset/DIV2K_val/LR_bicubic/X2', #
-        # gt_folder=f'{mydata_dir}/Classical/Manga109/GTmod12',  #f'{mydata_dir}/Classical/Urban100/GTmod12',  #f'{mydata_dir}/Classical/BSDS100/GTmod12',  #f'{mydata_dir}/Classical/Set5/GTmod12', #f'{data_dir}/testset/DIV2K_val/HR', #f'{mydata_dir}/Classical/Urban100/GTmod12',  #f'{mydata_dir}/Classical/Manga109/GTmod12',  #
-        # pipeline=test_pipeline,  #tmp_pipeline3, #TODO
-        # scale=val_scale,
-        # filename_tmpl='{}'))  #x4
-        type=val_dataset_type,
-        gt_folder=f'{data_dir}/testset/DIV2K_val/HR', #f'{data_dir}/testset/Manga109/HR',  #f'{data_dir}/testset/Urban100/HR',  #f'{data_dir}/testset/B100/HR', #f'{data_dir}/testset/Set14/HR', #f'{data_dir}/testset/Set5/HR', #f'{mydata_dir}/Classical/Urban100/GTmod12',  #
-        pipeline=valid_pipeline,
-        scale=val_scale)) 
-        # type=test_dataset_type,
-        # lq_folder=f'{mydata_dir}/Classical/Urban100/LRbicx4',  #
-        # gt_folder=f'{mydata_dir}/Classical/Urban100/GTmod12',  #
-        # pipeline=continuous_pipeline,
-        # scale=val_scale,
-        # filename_tmpl='{}'))
-        # type=val_dataset_type,
-        # gt_folder=f'{data_dir}/testset/Urban100/HR',  #f'{data_dir}/testset/DIV2K_val/HR', #f'{data_dir}/testset/Manga109/HR',  #f'{data_dir}/testset/B100/HR', #f'{mydata_dir}/Classical/Urban100/GTmod12',  #f'{data_dir}/sr_test/Set5', #
-        # pipeline=tmp_pipeline,
-        # scale=val_scale))
-        # type=val_dataset_type,
-        # gt_folder=f'{mydata_dir}/Classical/Urban100/GTmod12',  #f'{mydata_dir}/Classical/Manga109/GTmod12',  #f'{data_dir}/testset/Urban100/HR',  #f'{data_dir}/testset/DIV2K_val/HR', #f'{data_dir}/testset/B100/HR', #f'{mydata_dir}/Classical/Urban100/GTmod12',  #f'{data_dir}/sr_test/Set5', #
-        # pipeline=tmp_pipeline2,
-        # scale=val_scale))
+        type=test_dataset_type,
+        lq_folder=lq_path,
+        gt_folder=gt_path, 
+        pipeline=test_pipeline,  
+        scale=val_scale,
+        filename_tmpl='{}') if val_scale <= 4 else 
+            dict(type=val_dataset_type, 
+                 gt_folder=gt_path, 
+                 pipeline=valid_pipeline, 
+                 scale=val_scale)
 
 # optimizer
 optimizers = dict(type='Adam', lr=1.e-4)
