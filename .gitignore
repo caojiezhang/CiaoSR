@@ -112,8 +112,6 @@ venv.bak/
 *.pkl.json
 *.log.json
 work_dirs/
-/data/
-/data
 mmedit/.mim
 
 # Pytorch
@@ -143,7 +141,6 @@ build/
 *.pyc
 *.pth
 experiments/
-data
 data_root
 results
 work_dirs/
@@ -173,9 +170,7 @@ mmedited/models/backbones/.DS_Store
 
 test
 mydata
-data
 work_dirs
-pretrain_model
 **/*.pth
 mmedited/datasets/__pycache__/
 mmedited/models/backbones/sr_backbones/__pycache__/
