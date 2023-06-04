@@ -175,6 +175,7 @@ test
 mydata
 data
 work_dirs
+pretrain_model
 **/*.pth
 mmedited/datasets/__pycache__/
 mmedited/models/backbones/sr_backbones/__pycache__/
