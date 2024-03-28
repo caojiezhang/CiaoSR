@@ -17,7 +17,7 @@ Computer Vision Lab, ETH Zurich.
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-<COLOR>.svg)](https://arxiv.org/abs/2212.04362)
 [![GitHub Stars](https://img.shields.io/github/stars/caojiezhang/CiaoSR?style=social)](https://github.com/caojiezhang/CiaoSR)
 [![download](https://img.shields.io/github/downloads/caojiezhang/CiaoSR/total.svg)](https://github.com/caojiezhang/CiaoSR/releases)
-![visitors](https://visitor-badge.glitch.me/badge?page_id=caojiezhang/CiaoSR)
+![visitors](https://visitor-badge.laobi.icu/badge?page_id=caojiezhang/CiaoSR)
 
 This repository is the official PyTorch implementation of "CiaoSR: Continuous Implicit Attention-in-Attention Network for Arbitrary-Scale Image Super-Resolution"
 ([arxiv](https://arxiv.org/abs/2212.04362), [supp](https://github.com/caojiezhang/CiaoSR/releases/download/v0.0/supplementary.pdf), [pretrained models](https://github.com/caojiezhang/CiaoSR/releases), [visual results](https://github.com/caojiezhang/CiaoSR/releases)). CiaoSR achieves state-of-the-art performance in arbitrary-scale image super-resolution. 
