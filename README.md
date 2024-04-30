@@ -102,7 +102,7 @@ We achieved state-of-the-art performance on arbitrary-scale iamge super-resoluti
   @inproceedings{cao2023ciaosr,
     title={CiaoSR: Continuous Implicit Attention-in-Attention Network for Arbitrary-Scale Image Super-Resolution},
     author={Cao, Jiezhang and Wang, Qin and Xian, Yongqin and Li, Yawei and Ni, Bingbing and Pi, Zhiming and Zhang, Kai and Zhang, Yulun and Timofte, Radu and Van Gool, Luc},
-    booktitle={The IEEE Computer Vision and Pattern Recognition},
+    booktitle={IEEE Conference on Computer Vision and Pattern Recognition},
     year={2023}
   }
   ```
